@@ -51,7 +51,7 @@ pub mod service {
             WebSocketClient { host, port, _client: Client::new(), _headers: headers }
         }
         
-        // Webex client specific functionality.
+        // WebSocket User Registration.
         // ----------------------------------------------------------------------------
         pub async fn register(&self, user_id: u16) -> RegisterResponse {
             let response = self._client
@@ -71,6 +71,28 @@ pub mod service {
         
             return message;
         }
+
+        // WebSocket message publishing.
+        // ----------------------------------------------------------------------------
+
+        /* pub async fn publish(&self, user_id: u16, topic: String, message: serde_json::Value) {
+            let response = self._client
+                .post(format!("http://{}:{}/{}", self.host, self.port, RegisterResponse::API_ENDPOINT))
+                .headers(self._headers.clone())
+                .json(&Register{ user_id: user_id })
+                .send()
+                .await
+                .unwrap();
+        
+                self.review_status(&response);
+        
+            let message = response
+                .json::<RegisterResponse>()
+                .await
+                .expect("failed to convert struct from json");
+        
+            return message;
+        } */
     
         // Review the status for the response.
         // ----------------------------------------------------------------------------
