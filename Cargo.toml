@@ -1,0 +1,15 @@
+[package]
+name = "embedded-futbolito"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+futures = { version = "0.3.28", default-features = false }
+tokio = { version = "1.32", features = ["macros", "sync", "rt-multi-thread"] }
+log = { version = "0.4.20", features = ["std", "serde"] }
+serde_json = "1.0.107"
+tokio-stream = "0.1.14"
+serde = { version = "1.0.188", features = ["derive"] }
+reqwest = "0.11.20"
