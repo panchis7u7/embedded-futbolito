@@ -22,3 +22,4 @@ env_logger = "0.10.0"
 rusty_webex = { git = "https://github.com/panchis7u7/Rusty-Webex.git" }
 rocket = { version = "=0.5.0-rc.3", features = ["json"] }
 regex = "1.9.6"
+dotenv = "0.15.0"

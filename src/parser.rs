@@ -1,12 +1,11 @@
-use log::error;
-use regex::Regex;
+use log::{debug, error};
 use std::io::{Error, ErrorKind};
 
 // ###################################################################
 // Define the Argument trait
 // ###################################################################
 
-trait Argument {
+pub trait Argument {
     fn name(&self) -> &str;
     fn is_required(&self) -> bool;
 }
@@ -49,7 +48,7 @@ pub struct OptionalArgument<T> {
 }
 
 impl<T> OptionalArgument<T> {
-    fn new(name: &str) -> Self {
+    pub fn new(name: &str) -> Self {
         OptionalArgument {
             name: name.to_string(),
             _phantom: std::marker::PhantomData,
@@ -80,7 +79,7 @@ pub struct Command {
 impl Command {
     const INVALID_CMD: &str = "You have entered an invalid Command!";
     const NO_CMD: &str = "Command was not specified!";
-    const INVALID_SYNTAX: &str = "Sorry, I could not understand you.";
+    // const INVALID_SYNTAX: &str = "Sorry, I could not understand you.";
     const MISSING_ARGS: &str = "Missing required variables.";
 
     pub fn invalid(error: &str) -> Error {
@@ -103,38 +102,78 @@ impl Parser {
         }
     }
 
+    // ------------------------------------------------------------------------------
+    // Append a command to the available (parsable). list of commands
+    // ------------------------------------------------------------------------------
+
     pub fn add_command(&mut self, name: &str, args: Vec<Box<dyn Argument>>) {
         self.commands.insert(name.to_string(), args);
     }
+
+    // ------------------------------------------------------------------------------
+    // Retrieve the set of arguments required for proper command execution.
+    // ------------------------------------------------------------------------------
 
     pub fn get_command_arguments(&self, name: &str) -> Option<&Vec<Box<dyn Argument>>> {
         self.commands.get(name)
     }
 
-    pub fn parse(&self, plain_string_message: String) -> Result<Command, Error> {
-        let re = Regex::new(r"\/?\w+").unwrap();
+    // ------------------------------------------------------------------------------
+    // Parse the plain text string values into a usable command.
+    // ------------------------------------------------------------------------------
 
-        // Every command must initialize with "/"
-        if !re.is_match(&plain_string_message) {
-            error!("Error 1");
-            Err::<Command, Error>(Command::invalid(Command::INVALID_CMD));
+    pub fn parse(&self, plain_string_message: String) -> Result<Command, Error> {
+        // Separate the bot name from the actual command and arguments. \/?\w+
+        let parts = plain_string_message.split(' ').collect::<Vec<&str>>();
+        let num_parts = parts.len();
+        if num_parts <= 1 {
+            error!("No command has been specified!");
+            Err::<Command, Error>(Command::invalid(Command::NO_CMD));
         }
 
         // If the command is correctly initialized, check if it is available as
         // a key within the hasmap.
-        if !self.commands.contains_key(plain_string_message.as_str()) {
+        if !self.commands.contains_key(parts[1]) {
+            error!("Command not found!");
             Err::<Command, Error>(Command::invalid(Command::INVALID_CMD));
         }
 
-        // If it is valid, check for any required arguments.
-        for argument in self.commands.get(plain_string_message.as_str()).unwrap() {
-            if argument.is_required() {}
+        // If the commands is present within the registered commands, retrive the
+        // structure information.
+        let command_structure = self.commands.get(parts[1]).unwrap();
+        let arguments_len = command_structure.len();
+
+        let mut required_arguments = Vec::<(String, String)>::new();
+        let mut optional_arguments = Vec::<(String, String)>::new();
+
+        // Check if the required arguments list is satisfied.
+        if arguments_len >= num_parts - 2 {
+            for index in 0..num_parts - 1 {
+                if command_structure[index].is_required() {
+                    debug!("Required command: {}", command_structure[index].name());
+                    required_arguments.push((
+                        command_structure[index].name().to_string(),
+                        parts[index].to_string(),
+                    ));
+                } else {
+                    debug!("Optional command: {}", command_structure[index].name());
+                    optional_arguments.push((
+                        command_structure[index].name().to_string(),
+                        parts[index].to_string(),
+                    ));
+                }
+            }
+        } else {
+            error!("Did not specified all the required arguments to execute this command!");
+            Err::<Command, Error>(Command::invalid(Command::MISSING_ARGS));
         }
 
-        let mut command = Command {
-            command: "test".to_string(),
-            required_arguments: Vec::new(),
-            optional_arguments: Vec::new(),
+        // Return the final parsed command with its respective required/optional
+        // arguments classified.
+        let command = Command {
+            command: parts[1].to_string(),
+            required_arguments: required_arguments,
+            optional_arguments: optional_arguments,
         };
 
         Ok(command)

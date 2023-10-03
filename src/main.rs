@@ -1,24 +1,37 @@
 use futures_util::{SinkExt, StreamExt};
 use log::{debug, info};
 use parser::Parser;
-use rocket::post;
-use rocket::serde::json::Json;
 use rusty_webex::WebexClient;
 use service::service::WebSocketClient;
 use std::io::{self, Write};
 use std::thread;
+use types::{MessageEventResponse, Response};
+
+// dotenv
+use dotenv::dotenv;
+
+// Tokio
 use tokio::io::AsyncReadExt;
 use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
-use types::{MessageEventResponse, Response};
+
+// Rocket Dependencies
+use rocket::fs::FileServer;
+use rocket::serde::json::Json;
+use rocket::{post, routes};
 
 mod parser;
 mod service;
 mod types;
 
 // Webhook root listener.
-#[post("/rtac/bot", format = "json", data = "<data>")]
+#[post("/cats/futbolito", format = "json", data = "<data>")]
 async fn webhook_listener(data: Json<Response<MessageEventResponse>>) -> () {
     info!("[Webhook data]: {:?}\n", data);
+
+    // Load the environment variables from the .env file.
+    if dotenv().ok().is_none() {
+        some_error(".env file not detected.");
+    }
 
     let client = WebexClient::new(
         std::env::var("TOKEN")
@@ -36,14 +49,21 @@ async fn webhook_listener(data: Json<Response<MessageEventResponse>>) -> () {
     parser.add_command("/pair_tournament", vec![]);
     parser.add_command("/say_hello", vec![]);
 
-    let parsed_message = parser.parse(&detailed_message_info.text.as_ref().unwrap());
+    let parsed_message = parser.parse(detailed_message_info.text.unwrap());
 }
 
-#[rocket::main]
-async fn main() -> Result<(), rocket::Error> {
-    ::std::env::set_var("RUST_LOG", "debug");
-    env_logger::init();
+#[post("/signature")]
+fn signature() -> &'static str {
+    "embedded fudbolito bot!"
+}
 
+// Error utility function.
+fn some_error(msg: &str) -> ! {
+    eprintln!("Error: {}", msg);
+    panic!();
+}
+
+async fn init_websocket_client() {
     // Register to the websocket server..
     let client = WebSocketClient::new(String::from("172.172.194.77"), 8080);
     let registration_url = client.register(6).await;
@@ -59,7 +79,18 @@ async fn main() -> Result<(), rocket::Error> {
 
     // Split the full-duplex stream into sender and receiver.
     let (mut ws_sender, mut ws_receiver) = ws_stream.split();
+}
 
+#[rocket::main]
+async fn main() -> Result<(), rocket::Error> {
+    ::std::env::set_var("RUST_LOG", "debug");
+    env_logger::init();
+
+    let _rocket = rocket::build()
+        .mount("/", routes![signature, webhook_listener])
+        .mount("/public", FileServer::from("static/"))
+        .launch()
+        .await?;
     Ok(())
 }
 
