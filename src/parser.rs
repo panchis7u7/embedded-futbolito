@@ -1,6 +1,8 @@
 use log::{debug, error};
 use std::io::{Error, ErrorKind};
 
+use crate::types::ArgTuple;
+
 // ###################################################################
 // Define the Argument trait
 // ###################################################################
@@ -20,7 +22,7 @@ pub struct RequiredArgument<T> {
 }
 
 impl<T> RequiredArgument<T> {
-    fn new(name: &str) -> Self {
+    pub fn new(name: &str) -> Self {
         RequiredArgument {
             name: name.to_string(),
             _phantom: std::marker::PhantomData,
@@ -72,8 +74,8 @@ impl<T> Argument for OptionalArgument<T> {
 
 pub struct Command {
     pub command: String,
-    pub required_arguments: Vec<(String, String)>,
-    pub optional_arguments: Vec<(String, String)>,
+    pub required_arguments: ArgTuple,
+    pub optional_arguments: ArgTuple,
 }
 
 impl Command {
@@ -92,7 +94,8 @@ impl Command {
 // ###################################################################
 
 pub struct Parser {
-    commands: std::collections::HashMap<String, Vec<Box<dyn Argument>>>,
+    commands:
+        std::collections::HashMap<String, (fn(&ArgTuple, &ArgTuple) -> (), Vec<Box<dyn Argument>>)>,
 }
 
 impl Parser {
@@ -106,16 +109,21 @@ impl Parser {
     // Append a command to the available (parsable). list of commands
     // ------------------------------------------------------------------------------
 
-    pub fn add_command(&mut self, name: &str, args: Vec<Box<dyn Argument>>) {
-        self.commands.insert(name.to_string(), args);
+    pub fn add_command(
+        &mut self,
+        name: &str,
+        args: Vec<Box<dyn Argument>>,
+        callback: fn(&ArgTuple, &ArgTuple) -> (),
+    ) {
+        self.commands.insert(name.to_string(), (callback, args));
     }
 
     // ------------------------------------------------------------------------------
     // Retrieve the set of arguments required for proper command execution.
     // ------------------------------------------------------------------------------
 
-    pub fn get_command_arguments(&self, name: &str) -> Option<&Vec<Box<dyn Argument>>> {
-        self.commands.get(name)
+    pub fn get_command_arguments(&self, name: &str) -> &Vec<Box<dyn Argument>> {
+        &self.commands.get(name).unwrap().1
     }
 
     // ------------------------------------------------------------------------------
@@ -141,24 +149,24 @@ impl Parser {
         // If the commands is present within the registered commands, retrive the
         // structure information.
         let command_structure = self.commands.get(parts[1]).unwrap();
-        let arguments_len = command_structure.len();
+        let arguments_len = command_structure.1.len();
 
         let mut required_arguments = Vec::<(String, String)>::new();
         let mut optional_arguments = Vec::<(String, String)>::new();
 
         // Check if the required arguments list is satisfied.
         if arguments_len >= num_parts - 2 {
-            for index in 0..num_parts - 1 {
-                if command_structure[index].is_required() {
-                    debug!("Required command: {}", command_structure[index].name());
+            for index in 0..num_parts - 2 {
+                if command_structure.1[index].is_required() {
+                    debug!("Required command: {}", command_structure.1[index].name());
                     required_arguments.push((
-                        command_structure[index].name().to_string(),
+                        command_structure.1[index].name().to_string(),
                         parts[index].to_string(),
                     ));
                 } else {
-                    debug!("Optional command: {}", command_structure[index].name());
+                    debug!("Optional command: {}", command_structure.1[index].name());
                     optional_arguments.push((
-                        command_structure[index].name().to_string(),
+                        command_structure.1[index].name().to_string(),
                         parts[index].to_string(),
                     ));
                 }
@@ -168,12 +176,16 @@ impl Parser {
             Err::<Command, Error>(Command::invalid(Command::MISSING_ARGS));
         }
 
+        debug!("Calling the callback function supplied on the argument list.");
+        // Execute the callback function.
+        command_structure.0(&required_arguments, &optional_arguments);
+
         // Return the final parsed command with its respective required/optional
         // arguments classified.
         let command = Command {
             command: parts[1].to_string(),
-            required_arguments: required_arguments,
-            optional_arguments: optional_arguments,
+            optional_arguments,
+            required_arguments,
         };
 
         Ok(command)

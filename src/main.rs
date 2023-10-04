@@ -1,11 +1,22 @@
-use futures_util::{SinkExt, StreamExt};
-use log::{debug, info};
-use parser::Parser;
-use rusty_webex::WebexClient;
-use service::service::WebSocketClient;
+// #########################################################################################
+// Imports
+// #########################################################################################
+
+// std
 use std::io::{self, Write};
 use std::thread;
-use types::{MessageEventResponse, Response};
+
+// futures
+use futures_util::{SinkExt, StreamExt};
+
+// log
+use log::{debug, info};
+
+// local
+use parser::{Argument, Parser};
+use rusty_webex::WebexClient;
+use service::service::WebSocketClient;
+use types::{ArgTuple, MessageEventResponse, Response};
 
 // dotenv
 use dotenv::dotenv;
@@ -19,13 +30,35 @@ use rocket::fs::FileServer;
 use rocket::serde::json::Json;
 use rocket::{post, routes};
 
+// #########################################################################################
+// Modules
+// #########################################################################################
+
 mod parser;
 mod service;
 mod types;
 
+// #########################################################################################
+// Callbacks
+// #########################################################################################
+
+pub fn say_hello<'a>(required_args: &'a ArgTuple, optional_args: &'a ArgTuple) -> () {
+    debug!(
+        "Required arguments in the callback: {}\n",
+        required_args.len()
+    );
+    debug!(
+        "Optional arguments in the callback: {}\n",
+        optional_args.len()
+    );
+}
+
+// #########################################################################################
 // Webhook root listener.
+// #########################################################################################
+
 #[post("/cats/futbolito", format = "json", data = "<data>")]
-async fn webhook_listener(data: Json<Response<MessageEventResponse>>) -> () {
+async fn webhook_listener<'a>(data: Json<Response<MessageEventResponse>>) -> () {
     info!("[Webhook data]: {:?}\n", data);
 
     // Load the environment variables from the .env file.
@@ -33,23 +66,28 @@ async fn webhook_listener(data: Json<Response<MessageEventResponse>>) -> () {
         some_error(".env file not detected.");
     }
 
+    // Create a new webex client.
     let client = WebexClient::new(
         std::env::var("TOKEN")
             .expect("The TOKEN must be set.")
             .as_str(),
     );
 
+    // Retrieve message details as this contains the text for the bot call.
     let detailed_message_info = client.get_message_details(&data.data.id).await;
 
+    // Log the detailed message contents.
     log::info!("[Message info]: {:?}\n", &detailed_message_info);
 
+    // Create a new parser that can interpret the available commands.
     let mut parser = Parser::new();
-    parser.add_command("/embedded", vec![]);
-    parser.add_command("/casual_tournament", vec![]);
-    parser.add_command("/pair_tournament", vec![]);
-    parser.add_command("/say_hello", vec![]);
+    parser.add_command("/embedded", vec![], say_hello);
+    parser.add_command("/casual_tournament", vec![], say_hello);
+    parser.add_command("/pair_tournament", vec![], say_hello);
+    parser.add_command("/say_hello", vec![], say_hello);
 
-    let parsed_message = parser.parse(detailed_message_info.text.unwrap());
+    // Parse the received message.
+    parser.parse(detailed_message_info.text.unwrap());
 }
 
 #[post("/signature")]
@@ -62,6 +100,10 @@ fn some_error(msg: &str) -> ! {
     eprintln!("Error: {}", msg);
     panic!();
 }
+
+// #########################################################################################
+// Intialize Websocket Client for the Embedded Communication.
+// #########################################################################################
 
 async fn init_websocket_client() {
     // Register to the websocket server..
@@ -80,6 +122,10 @@ async fn init_websocket_client() {
     // Split the full-duplex stream into sender and receiver.
     let (mut ws_sender, mut ws_receiver) = ws_stream.split();
 }
+
+// #########################################################################################
+// Server Entrypoint.
+// #########################################################################################
 
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
