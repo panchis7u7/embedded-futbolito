@@ -4,19 +4,20 @@
 
 // std
 use std::io::{self, Write};
-use std::thread;
+use std::{thread, vec};
 
 // futures
-use futures_util::{SinkExt, StreamExt};
+use futures_util::{Future, SinkExt, StreamExt};
 
 // log
 use log::{debug, info};
 
 // local
-use parser::{Argument, Parser};
+use rusty_webex::types::MessageOut; //For pull from git.
+use rusty_webex::WebexBotServer;
 use rusty_webex::WebexClient;
 use service::service::WebSocketClient;
-use types::{ArgTuple, MessageEventResponse, Response};
+use types::{MessageEventResponse, Response};
 
 // dotenv
 use dotenv::dotenv;
@@ -34,68 +35,16 @@ use rocket::{post, routes};
 // Modules
 // #########################################################################################
 
-mod parser;
+extern crate rusty_webex;
 mod service;
 mod types;
 
-// #########################################################################################
-// Callbacks
-// #########################################################################################
-
-pub fn say_hello<'a>(required_args: &'a ArgTuple, optional_args: &'a ArgTuple) -> () {
-    debug!(
-        "Required arguments in the callback: {}\n",
-        required_args.len()
-    );
-    debug!(
-        "Optional arguments in the callback: {}\n",
-        optional_args.len()
-    );
-}
+pub type ArgTuple = Vec<(std::string::String, std::string::String)>;
 
 // #########################################################################################
-// Webhook root listener.
+// Utility functions.
 // #########################################################################################
 
-#[post("/cats/futbolito", format = "json", data = "<data>")]
-async fn webhook_listener<'a>(data: Json<Response<MessageEventResponse>>) -> () {
-    info!("[Webhook data]: {:?}\n", data);
-
-    // Load the environment variables from the .env file.
-    if dotenv().ok().is_none() {
-        some_error(".env file not detected.");
-    }
-
-    // Create a new webex client.
-    let client = WebexClient::new(
-        std::env::var("TOKEN")
-            .expect("The TOKEN must be set.")
-            .as_str(),
-    );
-
-    // Retrieve message details as this contains the text for the bot call.
-    let detailed_message_info = client.get_message_details(&data.data.id).await;
-
-    // Log the detailed message contents.
-    log::info!("[Message info]: {:?}\n", &detailed_message_info);
-
-    // Create a new parser that can interpret the available commands.
-    let mut parser = Parser::new();
-    parser.add_command("/embedded", vec![], say_hello);
-    parser.add_command("/casual_tournament", vec![], say_hello);
-    parser.add_command("/pair_tournament", vec![], say_hello);
-    parser.add_command("/say_hello", vec![], say_hello);
-
-    // Parse the received message.
-    parser.parse(detailed_message_info.text.unwrap());
-}
-
-#[post("/signature")]
-fn signature() -> &'static str {
-    "embedded fudbolito bot!"
-}
-
-// Error utility function.
 fn some_error(msg: &str) -> ! {
     eprintln!("Error: {}", msg);
     panic!();
@@ -107,7 +56,17 @@ fn some_error(msg: &str) -> ! {
 
 async fn init_websocket_client() {
     // Register to the websocket server..
-    let client = WebSocketClient::new(String::from("172.172.194.77"), 8080);
+    let client = WebSocketClient::new(
+        String::from(
+            std::env::var("WS_SERVER")
+                .expect("The TOKEN must be set.")
+                .as_str(),
+        ),
+        std::env::var("WS_SERVER_PORT")
+            .expect("The TOKEN must be set.")
+            .parse::<u16>()
+            .unwrap(),
+    );
     let registration_url = client.register(6).await;
     println!("Registration URL from server: {}", &registration_url.url);
 
@@ -132,11 +91,53 @@ async fn main() -> Result<(), rocket::Error> {
     ::std::env::set_var("RUST_LOG", "debug");
     env_logger::init();
 
-    let _rocket = rocket::build()
-        .mount("/", routes![signature, webhook_listener])
-        .mount("/public", FileServer::from("static/"))
-        .launch()
-        .await?;
+    // Load the environment variables from the .env file.
+    if dotenv().ok().is_none() {
+        some_error(".env file not detected.");
+    }
+
+    // Create a new webex bot server.
+    let server = WebexBotServer::new(
+        std::env::var("TOKEN")
+            .expect("The TOKEN must be set.")
+            .as_str(),
+    );
+
+    // server.add_command(
+    //     "/say_hello",
+    //     vec![],
+    //     Box::new(
+    //         move |client: &WebexClient, message, required_arguments, optional_arguments| {
+    //             Box::pin(async move {
+    //                 log::info!("Callback executed!");
+    //                 client.send_message(&MessageOut::from(message)).await;
+    //             })
+    //         },
+    //     ),
+    // );
+
+    server
+        .add_command(
+            "/say_hello",
+            vec![],
+            move |client: WebexClient, message, _required_args, _optional_argss| {
+                Box::pin(async move {
+                    log::info!("Callback executed!");
+
+                    let mut event_response_message = MessageOut::from(message);
+                    event_response_message.text =
+                        Some("Hola desde el cliente de Rust!".to_string());
+                    client
+                        .send_message(&MessageOut::from(event_response_message))
+                        .await;
+                })
+            },
+        )
+        .await;
+
+    // Launch the server.
+    server.launch().await;
+
     Ok(())
 }
 

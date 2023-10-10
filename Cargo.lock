@@ -1327,12 +1327,12 @@ checksum = "7ffc183a10b4478d04cbbbfc96d0873219d962dd5accaff2ffbd4ceb7df837f4"
 [[package]]
 name = "rusty_webex"
 version = "0.1.0"
-source = "git+https://github.com/panchis7u7/Rusty-Webex.git#a010f145cda671ef97424abb2c29ca0fcc985d25"
 dependencies = [
  "chrono",
  "http",
  "log",
  "reqwest",
+ "rocket",
  "serde",
  "serde_json",
 ]

@@ -51,5 +51,3 @@ pub struct Response<T> {
     pub actor_id: String,
     pub data: T,
 }
-
-pub type ArgTuple = Vec<(std::string::String, std::string::String)>;
