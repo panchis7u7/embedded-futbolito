@@ -3,21 +3,19 @@
 // #########################################################################################
 
 // std
-use std::io::{self, Write};
-use std::{thread, vec};
+use std::vec;
 
 // futures
-use futures_util::{Future, SinkExt, StreamExt};
+use futures_util::StreamExt;
 
 // log
 use log::{debug, info};
 
 // local
 use rusty_webex::types::MessageOut; //For pull from git.
+use rusty_webex::types::RequiredArgument;
 use rusty_webex::WebexBotServer;
-use rusty_webex::WebexClient;
 use service::service::WebSocketClient;
-use types::{MessageEventResponse, Response};
 
 // dotenv
 use dotenv::dotenv;
@@ -27,9 +25,6 @@ use tokio::io::AsyncReadExt;
 use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 
 // Rocket Dependencies
-use rocket::fs::FileServer;
-use rocket::serde::json::Json;
-use rocket::{post, routes};
 
 // #########################################################################################
 // Modules
@@ -49,6 +44,10 @@ fn some_error(msg: &str) -> ! {
     eprintln!("Error: {}", msg);
     panic!();
 }
+
+// #########################################################################################
+// Utility functions.
+// #########################################################################################
 
 // #########################################################################################
 // Intialize Websocket Client for the Embedded Communication.
@@ -103,24 +102,15 @@ async fn main() -> Result<(), rocket::Error> {
             .as_str(),
     );
 
-    // server.add_command(
-    //     "/say_hello",
-    //     vec![],
-    //     Box::new(
-    //         move |client: &WebexClient, message, required_arguments, optional_arguments| {
-    //             Box::pin(async move {
-    //                 log::info!("Callback executed!");
-    //                 client.send_message(&MessageOut::from(message)).await;
-    //             })
-    //         },
-    //     ),
-    // );
+    // -------------------------------------------------------------------------------------------
+    // Say Hello (Greet) Command.
+    // -------------------------------------------------------------------------------------------
 
     server
         .add_command(
             "/say_hello",
             vec![],
-            move |client: WebexClient, message, _required_args, _optional_argss| {
+            move |client, message, _required_args, _optional_args| {
                 Box::pin(async move {
                     log::info!("Callback executed!");
 
@@ -135,8 +125,22 @@ async fn main() -> Result<(), rocket::Error> {
         )
         .await;
 
+    // -------------------------------------------------------------------------------------------
+    // Enable embedded functionality.
+    // -------------------------------------------------------------------------------------------
+
+    server
+        .add_command(
+            "/embedded",
+            vec![Box::new(RequiredArgument::<String>::new("is_embedded"))],
+            move |client, message, _required_args, _optional_args| {
+                Box::pin(async move { debug!("Activated embedded version for the futbolito bot.") })
+            },
+        )
+        .await;
+
     // Launch the server.
-    server.launch().await;
+    let _ = server.launch().await;
 
     Ok(())
 }
@@ -228,15 +232,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 // Our helper method which will read data from stdin and send it along the
 // sender provided.
-async fn read_stdin(tx: futures_channel::mpsc::UnboundedSender<Message>) {
-    let mut stdin = tokio::io::stdin();
-    loop {
-        let mut buf = vec![0; 1024];
-        let n = match stdin.read(&mut buf).await {
-            Err(_) | Ok(0) => break,
-            Ok(n) => n,
-        };
-        buf.truncate(n);
-        tx.unbounded_send(Message::binary(buf)).unwrap();
-    }
-}
+// async fn read_stdin(tx: futures_channel::mpsc::UnboundedSender<Message>) {
+//     let mut stdin = tokio::io::stdin();
+//     loop {
+//         let mut buf = vec![0; 1024];
+//         let n = match stdin.read(&mut buf).await {
+//             Err(_) | Ok(0) => break,
+//             Ok(n) => n,
+//         };
+//         buf.truncate(n);
+//         tx.unbounded_send(Message::binary(buf)).unwrap();
+//     }
+// }
