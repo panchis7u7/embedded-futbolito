@@ -100,23 +100,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             vec![Box::new(RequiredArgument::<String>::new("is_embedded"))],
             move |_client, _message, _required_args, _optional_args| {
                 Box::pin(async move {
-                    debug!("Activated embedded version for the futbolito bot.");
+                    debug!("Activated embedded version for the futbolito bot!");
+
                     // Setup the websocket client for communication with the embedded device to the webex bot.
-                    let client = WebSocketClient::new(
+                    let ws_client = WebSocketClient::new(
                         "172.172.194.77",
                         8080,
                         2,
                         vec![String::from("fut_assist")],
                     );
-                    let registration_url = client.register().await;
+                    let registration_url = ws_client.register().await;
                     println!("Registration URL from server: {}", &registration_url.url);
 
                     // Generate sender and receiver for the websocket crated.
-                    let (_sender, receiver) =
-                        client.start_ws_client(registration_url.url).await.unwrap();
+                    let (_sender, receiver) = ws_client
+                        .start_ws_client(registration_url.url)
+                        .await
+                        .unwrap();
 
                     // Spawn a task to listen for incoming messages
-                    tokio::spawn(listen_for_messages(receiver));
+                    tokio::spawn(listen_for_messages(ws_client, receiver));
                 })
             },
         )
@@ -129,11 +132,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 // Function to listen for incoming messages and process them
-async fn listen_for_messages(mut receiver: Receiver<Message>) {
+async fn listen_for_messages(client: WebSocketClient, mut receiver: Receiver<Message>) {
     while let Some(message) = receiver.recv().await {
         match message {
             Message::Text(text) => {
                 println!("Received message: {}", text);
+                client
+                    .publish(
+                        2,
+                        String::from("embedded_rpi"),
+                        serde_json::Value::String(String::from("{'message': 'Hello RPI!'}")),
+                    )
+                    .await;
             }
             _ => {
                 println!("Received non-text message");
