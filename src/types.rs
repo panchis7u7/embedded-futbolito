@@ -16,6 +16,14 @@ pub struct RegisterResponse {
 #[derive(Serialize, Deserialize)]
 pub struct Register {
     pub user_id: u16,
+    pub groups: Vec<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Publish {
+    pub user_id: u16,
+    pub group: String,
+    pub message: String,
 }
 
 // ###########################################################################
