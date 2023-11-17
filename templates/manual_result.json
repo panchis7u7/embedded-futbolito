@@ -1,0 +1,132 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "TextBlock",
+            "weight": "Bolder",
+            "text": "Custom pairs match",
+            "horizontalAlignment": "Center",
+            "wrap": true,
+            "color": "Light",
+            "size": "Large",
+            "spacing": "Small"
+        },
+        {
+            "type": "Image",
+            "url": "https://i.kym-cdn.com/entries/icons/original/000/012/468/shakeee.jpg"
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "Please ingress all CECs for each pair",
+                            "wrap": true,
+                            "color": "Warning",
+                            "weight": "Bolder"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "width": "auto",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "1",
+                            "horizontalAlignment": "Center",
+                            "size": "ExtraLarge",
+                            "fontType": "Monospace"
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "2",
+                            "horizontalAlignment": "Center",
+                            "size": "ExtraLarge",
+                            "fontType": "Monospace"
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "3",
+                            "horizontalAlignment": "Center",
+                            "size": "ExtraLarge",
+                            "fontType": "Monospace"
+                        }
+                    ],
+                    "style": "emphasis"
+                },
+                {
+                    "type": "Column",
+                    "width": 70,
+                    "items": [
+                        {
+                            "type": "Input.Text",
+                            "placeholder": "Player 1",
+                            "isRequired": true,
+                            "id": "ml0"
+                        },
+                        {
+                            "type": "Input.Text",
+                            "placeholder": "Player 1",
+                            "isRequired": true,
+                            "id": "ml1"
+                        },
+                        {
+                            "type": "Input.Text",
+                            "placeholder": "Player 1",
+                            "isRequired": true,
+                            "id": "ml2"
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width": 70,
+                    "items": [
+                        {
+                            "type": "Input.Text",
+                            "placeholder": "Player 2",
+                            "isRequired": true,
+                            "id": "mr0"
+                        },
+                        {
+                            "type": "Input.Text",
+                            "placeholder": "Player 2",
+                            "isRequired": true,
+                            "id": "mr1"
+                        },
+                        {
+                            "type": "Input.Text",
+                            "placeholder": "Player 2",
+                            "isRequired": true,
+                            "id": "mr2"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "ActionSet",
+            "actions": [
+                {
+                    "type": "Action.Submit",
+                    "title": "Submit",
+                    "data": {
+                        "callback_keyword": "adaptive_callback"
+                    }
+                }
+            ]
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.3"
+}

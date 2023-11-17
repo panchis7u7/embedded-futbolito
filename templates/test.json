@@ -1,0 +1,61 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "Input.ChoiceSet",
+            "choices": [
+                {
+                    "title": "Futbolito pair tournament",
+                    "value": "futbolito pair"
+                },
+                {
+                    "title": "Futbolito solo tournament",
+                    "value": "futbolito solo"
+                },
+                {
+                    "title": "Smash tournament",
+                    "value": "smash"
+                }
+            ],
+            "placeholder": "Tournament game",
+            "id": "1000",
+            "isRequired": true,
+            "errorMessage": "Please select the tournament game"
+        },
+        {
+            "type": "Image",
+            "url": "https://i.postimg.cc/cLP75Mgf/smash-tournament.png"
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "weight": "Bolder",
+                            "text": "Choose your players:",
+                            "horizontalAlignment": "Left",
+                            "wrap": true,
+                            "color": "Light",
+                            "size": "Large",
+                            "spacing": "Small"
+                        }
+                    ],
+                    "width": "stretch"
+                }
+            ]
+        },
+        {
+            "type": "TextBlock",
+            "text": "Select the players who will participate on this tournament"
+        },
+        {
+            "type": "ColumnSet",
+            "columns": []
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.3"
+}

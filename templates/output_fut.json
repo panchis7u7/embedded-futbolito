@@ -1,0 +1,452 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "Image",
+            "url": "https://i.postimg.cc/ryCJFPzm/futbolito.jpg"
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "weight": "Bolder",
+                            "text": "Select the winner for each match",
+                            "horizontalAlignment": "Center",
+                            "wrap": true,
+                            "color": "Light",
+                            "size": "Large",
+                            "spacing": "Small"
+                        }
+                    ],
+                    "width": "stretch"
+                }
+            ]
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "width": 90,
+                    "items": [
+                        {
+                            "type": "Input.Toggle",
+                            "title": "mangelia",
+                            "id": "L0",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "mangelia",
+                            "id": "L1",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "mangelia",
+                            "id": "L2",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "mangelia",
+                            "id": "L3",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "mangelia",
+                            "id": "L4",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "bryserra",
+                            "id": "L5",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "bryserra",
+                            "id": "L6",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "bryserra",
+                            "id": "L7",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "bryserra",
+                            "id": "L8",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "ricarper",
+                            "id": "L9",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "ricarper",
+                            "id": "L10",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "ricarper",
+                            "id": "L11",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "semadrig",
+                            "id": "L12",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "semadrig",
+                            "id": "L13",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "leonaper",
+                            "id": "L14",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width": 90,
+                    "items": [
+                        {
+                            "type": "Input.Toggle",
+                            "title": "bryserra",
+                            "id": "R0",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "ricarper",
+                            "id": "R1",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "semadrig",
+                            "id": "R2",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "leonaper",
+                            "id": "R3",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "najuarez",
+                            "id": "R4",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "ricarper",
+                            "id": "R5",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "semadrig",
+                            "id": "R6",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "leonaper",
+                            "id": "R7",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "najuarez",
+                            "id": "R8",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "semadrig",
+                            "id": "R9",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "leonaper",
+                            "id": "R10",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "najuarez",
+                            "id": "R11",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "leonaper",
+                            "id": "R12",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "najuarez",
+                            "id": "R13",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "najuarez",
+                            "id": "R14",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "---------------------------",
+                            "spacing": "Small",
+                            "size": "Small",
+                            "horizontalAlignment": "Center"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "ActionSet",
+            "actions": [
+                {
+                    "type": "Action.Submit",
+                    "title": "Submit",
+                    "data": {
+                        "callback_keyword": "adaptive_callback"
+                    }
+                }
+            ],
+            "horizontalAlignment": "Center"
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.3"
+}

@@ -2,12 +2,17 @@
 // Imports
 // #########################################################################################
 
+use std::fs;
+use std::io::BufReader;
+use std::path::Path;
 // std
 use std::vec;
 
 // log
-use log::{debug, info};
+use log::debug;
 
+use rusty_webex::adaptive_card::AdaptiveCard;
+use rusty_webex::types::Attachment;
 // local
 use rusty_webex::types::MessageOut; //For pull from git.
 use rusty_webex::types::RequiredArgument;
@@ -77,7 +82,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             vec![],
             move |client, message, _required_args, _optional_args| {
                 Box::pin(async move {
-                    log::info!("Callback executed!");
+                    debug!("[bot_server:say_hello]: callback entered.");
 
                     let mut event_response_message = MessageOut::from(message);
                     event_response_message.text =
@@ -120,6 +125,43 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     // Spawn a task to listen for incoming messages
                     tokio::spawn(listen_for_messages(ws_client, receiver));
+                })
+            },
+        )
+        .await;
+
+    server
+        .add_command(
+            "/casual_tournament",
+            vec![],
+            move |client, message, _r_args, _o_args| {
+                Box::pin(async move {
+                    debug!("[bot_server:casual_tournament]: callback entered.");
+
+                    // Retrieve information from the bot reference message and the originator to
+                    // save them later in a state.
+                    let _message_id = message.id.clone().unwrap();
+                    let _organizer_id = message.person_email.clone().unwrap();
+
+                    // Generate an outoging message template from the incoming messages and edit only
+                    // the fields of interest.
+                    let mut event_response_message = MessageOut::from(message);
+
+                    // Open a pre-made .json template for us to send directly.
+                    let json_file_path = Path::new("./templates/card_template.json");
+                    let file =
+                        fs::File::open(json_file_path).expect("file should open as read only");
+                    let reader = BufReader::new(file);
+
+                    // Send the loaded adaptive card.
+                    event_response_message.attachments = Some(vec![Attachment {
+                        content_type: "application/vnd.microsoft.card.adaptive".to_string(),
+                        content: AdaptiveCard::from_json_reader(reader),
+                    }]);
+
+                    client.send_message(&event_response_message).await;
+
+                    debug!("[bot_server:casual_tournament]: exiting callback.");
                 })
             },
         )

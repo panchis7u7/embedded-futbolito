@@ -1,0 +1,198 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "Input.ChoiceSet",
+            "choices": [
+                {
+                    "title": "Futbolito pair tournament",
+                    "value": "futbolito pair"
+                },
+                {
+                    "title": "Futbolito solo tournament",
+                    "value": "futbolito solo"
+                },
+                {
+                    "title": "Smash tournament",
+                    "value": "smash"
+                }
+            ],
+            "placeholder": "Tournament game",
+            "id": "1000",
+            "isRequired": true,
+            "errorMessage": "Please select the tournament game"
+        },
+        {
+            "type": "Image",
+            "url": "https://i.postimg.cc/cLP75Mgf/smash-tournament.png"
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "weight": "Bolder",
+                            "text": "Choose your players:",
+                            "horizontalAlignment": "Left",
+                            "wrap": true,
+                            "color": "Light",
+                            "size": "Large",
+                            "spacing": "Small"
+                        }
+                    ],
+                    "width": "stretch"
+                }
+            ]
+        },
+        {
+            "type": "TextBlock",
+            "text": "Select the players who will participate on this tournament"
+        },
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "Input.Toggle",
+                            "title": "semadrig",
+                            "id": "0"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "mangelia",
+                            "id": "1"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "bryserra",
+                            "id": "2"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "anthern2",
+                            "id": "3"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "almosque",
+                            "id": "4"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "emgomez",
+                            "id": "5"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "jescontr",
+                            "id": "6"
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "Input.Toggle",
+                            "title": "leonaper",
+                            "id": "7"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "najuarez",
+                            "id": "8"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "ricarper",
+                            "id": "9"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "chpalma",
+                            "id": "10"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "asamanoo",
+                            "id": "11"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "ljaimese",
+                            "id": "12"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "pedgarci",
+                            "id": "13"
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                        {
+                            "type": "Input.Toggle",
+                            "title": "etoromol",
+                            "id": "14"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "asilva2",
+                            "id": "15"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "evidalga",
+                            "id": "16"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "diaguirr",
+                            "id": "17"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "fsimmond",
+                            "id": "18"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "rumeza",
+                            "id": "19"
+                        },
+                        {
+                            "type": "Input.Toggle",
+                            "title": "lizdiaz",
+                            "id": "20"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "ActionSet",
+            "actions": [
+                {
+                    "type": "Action.Submit",
+                    "title": "Submit",
+                    "associatedInputs": "auto",
+                    "data": {
+                        "callback_keyword": "adaptive_callback"
+                    }
+                }
+            ]
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.3"
+}
