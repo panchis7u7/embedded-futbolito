@@ -1329,12 +1329,17 @@ name = "rusty_webex"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "env_logger",
+ "futures",
+ "futures-util",
  "http",
  "log",
  "reqwest",
  "rocket",
  "serde",
  "serde_json",
+ "tokio-tungstenite",
+ "url",
 ]
 
 [[package]]

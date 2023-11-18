@@ -2,9 +2,6 @@
 // Imports
 // #########################################################################################
 
-use std::fs;
-use std::io::BufReader;
-use std::path::Path;
 // std
 use std::vec;
 
@@ -13,11 +10,11 @@ use log::debug;
 
 use rusty_webex::adaptive_card::AdaptiveCard;
 use rusty_webex::types::Attachment;
+use rusty_webex::WebSocketClient;
 // local
 use rusty_webex::types::MessageOut; //For pull from git.
 use rusty_webex::types::RequiredArgument;
 use rusty_webex::WebexBotServer;
-use service::service::WebSocketClient;
 
 // dotenv
 use dotenv::dotenv;
@@ -33,7 +30,6 @@ use tokio_tungstenite::tungstenite::protocol::Message;
 // #########################################################################################
 
 extern crate rusty_webex;
-mod service;
 mod types;
 
 pub type ArgTuple = Vec<(std::string::String, std::string::String)>;
@@ -114,7 +110,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         2,
                         vec![String::from("fut_assist")],
                     );
-                    let registration_url = ws_client.register().await;
+                    let registration_url = ws_client.register("register").await;
                     println!("Registration URL from server: {}", &registration_url.url);
 
                     // Generate sender and receiver for the websocket crated.
@@ -129,6 +125,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             },
         )
         .await;
+
+    // -------------------------------------------------------------------------------------------
+    // Start a casual tournament.
+    // -------------------------------------------------------------------------------------------
 
     server
         .add_command(
@@ -147,18 +147,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     // the fields of interest.
                     let mut event_response_message = MessageOut::from(message);
 
-                    // Open a pre-made .json template for us to send directly.
-                    let json_file_path = Path::new("./templates/card_template.json");
-                    let file =
-                        fs::File::open(json_file_path).expect("file should open as read only");
-                    let reader = BufReader::new(file);
-
                     // Send the loaded adaptive card.
                     event_response_message.attachments = Some(vec![Attachment {
                         content_type: "application/vnd.microsoft.card.adaptive".to_string(),
-                        content: AdaptiveCard::from_json_reader(reader),
+                        content: AdaptiveCard::from_json_file_reader(
+                            "./templates/card_template.json",
+                        ),
                     }]);
 
+                    // Send the card via the webex bot.
                     client.send_message(&event_response_message).await;
 
                     debug!("[bot_server:casual_tournament]: exiting callback.");
@@ -181,6 +178,7 @@ async fn listen_for_messages(client: WebSocketClient, mut receiver: Receiver<Mes
                 println!("Received message: {}", text);
                 client
                     .publish(
+                        "publish",
                         2,
                         String::from("embedded_rpi"),
                         serde_json::Value::String(String::from("{'message': 'Hello RPI!'}")),
