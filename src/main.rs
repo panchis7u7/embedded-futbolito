@@ -8,12 +8,12 @@ use std::vec;
 // log
 use log::debug;
 
+// local
 use rusty_webex::adaptive_card::AdaptiveCard;
 use rusty_webex::types::Attachment;
-use rusty_webex::WebSocketClient;
-// local
 use rusty_webex::types::MessageOut; //For pull from git.
 use rusty_webex::types::RequiredArgument;
+use rusty_webex::WebSocketClient;
 use rusty_webex::WebexBotServer;
 
 // dotenv
@@ -22,8 +22,6 @@ use dotenv::dotenv;
 // Tokio
 use tokio::sync::mpsc::Receiver;
 use tokio_tungstenite::tungstenite::protocol::Message;
-
-// Rocket Dependencies
 
 // #########################################################################################
 // Modules
@@ -61,12 +59,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         some_error(".env file not detected.");
     }
 
+    // Retriev the bot token.
+    let token: String = std::env::var("TOKEN").expect("The TOKEN must be set.");
+
     // Create a new webex bot server.
-    let server = WebexBotServer::new(
-        std::env::var("TOKEN")
-            .expect("The TOKEN must be set.")
-            .as_str(),
-    );
+    let server = WebexBotServer::new(token.as_str());
 
     // -------------------------------------------------------------------------------------------
     // Say Hello (Greet) Command.
@@ -165,10 +162,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await;
 
     // Launch the server.
-    let _ = server.launch().await;
+    let _ = server.launch(on_message, on_card_event).await;
 
     Ok(())
 }
+
+fn on_message() -> () {}
+
+fn on_card_event() -> () {}
 
 // Function to listen for incoming messages and process them
 async fn listen_for_messages(client: WebSocketClient, mut receiver: Receiver<Message>) {
