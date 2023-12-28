@@ -6,12 +6,14 @@
 use std::vec;
 
 // log
-use log::debug;
+use log::{debug, info};
 
 // local
 use rusty_webex::adaptive_card::AdaptiveCard;
-use rusty_webex::types::{Attachment, MessageOut, RequiredArgument, WebSocketServer};
-use rusty_webex::websocket::transport::TransportWebSocketClient;
+use rusty_webex::types::{
+    Attachment, MessageOut, RemoteTransportWebSocketServer, RequiredArgument,
+};
+use rusty_webex::websocket::TransportWebSocketClient;
 use rusty_webex::WebexBotServer;
 
 // dotenv
@@ -99,32 +101,30 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     debug!("Activated embedded version for the futbolito bot!");
 
                     // Create a websocket server structure for
-                    let websocket_server: WebSocketServer = WebSocketServer {
-                        host: "172.172.194.77",
-                        port: 8080,
-                        user_id: 2,
-                        subscription_groups: vec![String::from("fut_assist")],
-                    };
+                    let websocket_server: RemoteTransportWebSocketServer =
+                        RemoteTransportWebSocketServer {
+                            host: "172.172.194.77",
+                            port: 8080,
+                            user_id: 2,
+                            subscription_groups: vec![String::from("fut_assist")],
+                        };
 
                     // Setup the websocket client for communication with the embedded device to the webex bot.
-                    let ws_client = TransportWebSocketClient::new(
-                        "172.172.194.77",
-                        8080,
-                        2,
-                        vec![String::from("fut_assist")],
-                    );
-                    let registration_url = ws_client.register("register", websocket_server).await;
+                    let mut ws_client = TransportWebSocketClient::new(websocket_server);
+
+                    // Retrieve the websocket url string from the server.
+                    let registration_url = ws_client.register("register").await;
+
                     // let registration_url = ws_client.register("register").await;
                     println!("Registration URL from server: {}", &registration_url.url);
 
-                    // Generate sender and receiver for the websocket crated.
-                    let (_sender, receiver) = ws_client
-                        .start_ws_client(registration_url.url)
-                        .await
-                        .unwrap();
+                    // Start the connection to the websocket server.
+                    let _ = ws_client.connect(registration_url.url, false).await;
 
-                    // Spawn a task to listen for incoming messages
-                    tokio::spawn(listen_for_messages(ws_client, receiver));
+                    // Start listening for incoming messages and perform proper handling with a callback function.
+                    let _ = ws_client
+                        .listen_for_messages(|msg| info!("{:?}", msg))
+                        .await;
                 })
             },
         )
