@@ -10,10 +10,8 @@ use log::debug;
 
 // local
 use rusty_webex::adaptive_card::AdaptiveCard;
-use rusty_webex::types::Attachment;
-use rusty_webex::types::MessageOut; //For pull from git.
-use rusty_webex::types::RequiredArgument;
-use rusty_webex::WebSocketClient;
+use rusty_webex::types::{Attachment, MessageOut, RequiredArgument, WebSocketServer};
+use rusty_webex::websocket::transport::TransportWebSocketClient;
 use rusty_webex::WebexBotServer;
 
 // dotenv
@@ -63,7 +61,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let token: String = std::env::var("TOKEN").expect("The TOKEN must be set.");
 
     // Create a new webex bot server.
-    let server = WebexBotServer::new(token.as_str());
+    let mut server = WebexBotServer::new(token.as_str());
 
     // -------------------------------------------------------------------------------------------
     // Say Hello (Greet) Command.
@@ -100,14 +98,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Box::pin(async move {
                     debug!("Activated embedded version for the futbolito bot!");
 
+                    // Create a websocket server structure for
+                    let websocket_server: WebSocketServer = WebSocketServer {
+                        host: "172.172.194.77",
+                        port: 8080,
+                        user_id: 2,
+                        subscription_groups: vec![String::from("fut_assist")],
+                    };
+
                     // Setup the websocket client for communication with the embedded device to the webex bot.
-                    let ws_client = WebSocketClient::new(
+                    let ws_client = TransportWebSocketClient::new(
                         "172.172.194.77",
                         8080,
                         2,
                         vec![String::from("fut_assist")],
                     );
-                    let registration_url = ws_client.register("register").await;
+                    let registration_url = ws_client.register("register", websocket_server).await;
+                    // let registration_url = ws_client.register("register").await;
                     println!("Registration URL from server: {}", &registration_url.url);
 
                     // Generate sender and receiver for the websocket crated.
@@ -162,7 +169,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await;
 
     // Launch the server.
-    let _ = server.launch(on_message, on_card_event).await;
+    let _ = server.websocket_run(on_message, on_card_event).await;
 
     Ok(())
 }
@@ -172,19 +179,19 @@ fn on_message() -> () {}
 fn on_card_event() -> () {}
 
 // Function to listen for incoming messages and process them
-async fn listen_for_messages(client: WebSocketClient, mut receiver: Receiver<Message>) {
+async fn listen_for_messages(_client: TransportWebSocketClient, mut receiver: Receiver<Message>) {
     while let Some(message) = receiver.recv().await {
         match message {
-            Message::Text(text) => {
-                println!("Received message: {}", text);
-                client
-                    .publish(
-                        "publish",
-                        2,
-                        String::from("embedded_rpi"),
-                        serde_json::Value::String(String::from("{'message': 'Hello RPI!'}")),
-                    )
-                    .await;
+            Message::Text(_text) => {
+                // println!("Received message: {}", text);
+                // client
+                //     .publish(
+                //         "publish",
+                //         String::from("embedded_rpi"),
+                //         serde_json::Value::String(String::from("{'message': 'Hello RPI!'}")),
+                //
+                //     )
+                //     .await;
             }
             _ => {
                 println!("Received non-text message");
